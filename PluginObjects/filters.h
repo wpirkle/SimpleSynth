@@ -13,10 +13,14 @@
 
 -- making a change for GIT. blah
 asdlkfasdkfljasdfkljasdhfklsadjh
+<<<<<<< HEAD
 adsf
 asdf
 asdf
 asdf
+=======
+antotehr ahvenad;lkd
+>>>>>>> ff82b525167bfe22a8b6ba2fbd629af5338d3adc
 
 */
 // -----------------------------------------------------------------------------
