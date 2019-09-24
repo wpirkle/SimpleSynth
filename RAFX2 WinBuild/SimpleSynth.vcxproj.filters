@@ -173,15 +173,30 @@
     <ClInclude Include="..\PluginObjects\analogsaw.h">
       <Filter>PluginObjects</Filter>
     </ClInclude>
+    <ClInclude Include="..\PluginObjects\testbrick.h">
+      <Filter>PluginObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PluginObjects\wavetable.h">
+      <Filter>PluginObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PluginObjects\analog_square_1.h">
+      <Filter>PluginObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\PluginGUI.uidesc">
       <Filter>Resources</Filter>
     </None>
+    <None Include="..\..\Eqn1.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PluginGUIMain.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\docs\AddingDoxygenSupport.txt" />
+    <Text Include="..\docs\mainpage.txt" />
+    <Text Include="..\docs\oscillators.txt" />
   </ItemGroup>
 </Project>

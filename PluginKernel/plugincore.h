@@ -18,8 +18,21 @@
 
 // **--0x7F1F--**
 
+// --- Plugin Variables controlID Enumeration 
 
-// **--0x0F1F--**
+enum controlID {
+	masterPitchBend = 9,
+	masterTune = 19,
+	masterVolume_dB = 29,
+	lfo1Waveform = 50,
+	lfo1Mode = 51,
+	lfo1Frequency_Hz = 52,
+	lfo1DelayTime_mSec = 53,
+	lfo1RampTime_mSec = 54,
+	osc1_Waveform = 0
+};
+
+	// **--0x0F1F--**
 
 /**
 \class PluginCore
@@ -108,6 +121,24 @@ public:
 
 private:
 	//  **--0x07FD--**
+
+	// --- Continuous Plugin Variables 
+	double masterPitchBend = 0.0;
+	double masterTune = 0.0;
+	double masterVolume_dB = 0.0;
+	double lfo1Frequency_Hz = 0.0;
+	double lfo1DelayTime_mSec = 0.0;
+	double lfo1RampTime_mSec = 0.0;
+
+	// --- Discrete Plugin Variables 
+	int lfo1Waveform = 0;
+	enum class lfo1WaveformEnum { Triangle,Sin,Saw,RSH,QRSH,Noise,QRNoise };	// to compare: if(compareEnumToInt(lfo1WaveformEnum::Triangle, lfo1Waveform)) etc... 
+
+	int lfo1Mode = 0;
+	enum class lfo1ModeEnum { Sync,One_Shot,Free_Run };	// to compare: if(compareEnumToInt(lfo1ModeEnum::Sync, lfo1Mode)) etc... 
+
+	int osc1_Waveform = 0;
+	enum class osc1_WaveformEnum { w0,w1,w2,w3,w4,w5,w6,w7,w8,w9,w10,w11,w12,w13,w14,w15,w16,w17,w18,w19,w20,w21,w22,w23,w24,w25,w26,w27,w28,w29,w30,w31 };	// to compare: if(compareEnumToInt(osc1_WaveformEnum::w0, osc1_Waveform)) etc... 
 
 	// **--0x1A7F--**
     // --- end member variables

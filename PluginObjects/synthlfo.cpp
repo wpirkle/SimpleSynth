@@ -11,6 +11,16 @@ bool SynthLFO::update(bool updateAllModRoutings)
 
 	phaseInc = parameters->frequency_Hz / sampleRate;
 
+	// --- update the delay timer; this will NOT reset the timer
+	delayTimer.setTargetValueInSamples(msecToSamples(sampleRate, parameters->delayTime_mSec));
+
+	if (parameters->rampTime_mSec > 0.0)
+	{
+		ramplitudePerSampleStep = 1.0/msecToSamples(sampleRate, parameters->rampTime_mSec);
+	}
+	else 
+		ramplitudeValue = 1.0;
+
 	return true;
 }
 
@@ -20,12 +30,26 @@ const ModOutputData SynthLFO::renderModulatorOutput()
 	ModOutputData lfoOutputData; // should auto-zero on instantiation
 	lfoOutputData.clear();
 
+	// --- check for completed 1-shot
 	if (renderComplete)
 	{
 		return lfoOutputData;
 	}
 
-	// --- always first!
+	if (parameters->mode != LFOMode::kFreeRun)
+	{
+		// --- delay timer
+		if (!delayTimer.timerExpired())
+		{
+			// --- advance timer
+			delayTimer.advanceTimer();
+
+			// --- clear out the array
+			return lfoOutputData;
+		}
+	}
+
+	// --- check for completed 1-shot on this sampler period
 	bool bWrapped = checkAndWrapModulo(modCounter, phaseInc);
 	if (bWrapped && parameters->mode == LFOMode::kOneShot)
 	{
@@ -120,6 +144,10 @@ const ModOutputData SynthLFO::renderModulatorOutput()
 	lfoOutputData.modulationOutputs[kLFONormalOutput] *= parameters->outputAmplitude;
 	lfoOutputData.modulationOutputs[kLFOQuadPhaseOutput] *= parameters->outputAmplitude;
 
+	// --- scale by amplitude
+	lfoOutputData.modulationOutputs[kLFONormalOutput] *= ramplitudeValue;
+	lfoOutputData.modulationOutputs[kLFOQuadPhaseOutput] *= ramplitudeValue;
+
 	// --- invert two main outputs to make the opposite versions, scaling carries over
 	lfoOutputData.modulationOutputs[kLFONormalOutputInverted] = -lfoOutputData.modulationOutputs[kLFONormalOutput];
 	lfoOutputData.modulationOutputs[kLFOQuadPhaseOutputInverted] = -lfoOutputData.modulationOutputs[kLFOQuadPhaseOutput];
@@ -139,6 +167,26 @@ const ModOutputData SynthLFO::renderModulatorOutput()
 
 	// --- setup for next sample period
 	advanceModulo(modCounter, phaseInc);
+
+	// --- delay timer
+	if (parameters->mode == LFOMode::kFreeRun)
+	{
+		if (!delayTimer.timerExpired())
+		{
+			// --- clear out the array
+			lfoOutputData.clear();
+		}
+
+		// --- advance timer
+		delayTimer.advanceTimer();
+	}
+
+	// --- ramplitude
+	if (delayTimer.timerExpired() && ramplitudeValue < 1.0)
+	{
+		ramplitudeValue += ramplitudePerSampleStep;
+		boundValue(ramplitudeValue, 0.0, 1.0);
+	}
 
 	// --- scale by amplituded
 	return lfoOutputData;

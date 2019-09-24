@@ -5,6 +5,19 @@
 
 // --- LFO may have very diff waveforms from pitched output
 enum class LFOWaveform { kTriangle, kSin, kSaw, kRSH, kQRSH, kNoise, kQRNoise };
+
+
+/**
+\enum LFOMode
+
+\ingroup SynthDefs
+
+\brief LFO MOde of Operation
+
+- kSync: LFO restarts with each new note event
+- kOneShot: one cycle of LFO only
+- kFreeRun: oscillator free-runs after first note-on event
+*/
 enum class LFOMode { kSync, kOneShot, kFreeRun };
 
 // --- indexes in OscillatorOutputData::outputs array
@@ -13,7 +26,7 @@ enum {
 	kLFONormalOutputInverted,	// 1 etc...
 	kLFOQuadPhaseOutput,
 	kLFOQuadPhaseOutputInverted,
-	kUnipolarOutputFromMax,		/* this mimics an INVERTED EG going from MAX -> MAX */
+	kUnipolarOutputFromMax,		//< this mimics an INVERTED EG going from MAX to MAX 
 	kUnipolarOutputFromMin		/* this mimics an EG going from 0.0 -> MAX */
 };
 
@@ -31,21 +44,40 @@ struct SynthLFOParameters
 
 		frequency_Hz = params.frequency_Hz;
 		outputAmplitude = params.outputAmplitude;
+		delayTime_mSec = params.delayTime_mSec;
+		rampTime_mSec = params.rampTime_mSec;
 
 		return *this;
 	}
 
 	// --- individual parameters
-	LFOWaveform waveform = LFOWaveform::kTriangle;
+	LFOWaveform waveform = LFOWaveform::kQRSH;
 	LFOMode mode = LFOMode::kSync;
 
-	double frequency_Hz = 0.0;
+	double frequency_Hz = 7.0;
 	double outputAmplitude = 1.0;
+	double delayTime_mSec = 0.0;
+	double rampTime_mSec = 0.0;
+
 };
 
 
 
-// --- LFO object, note ISynthOscillator
+/**
+\class SynthLFO
+\ingroup SynthClasses
+\brief Encapsulates a synth LFO.
+
+Outputs: contains 6 outputs
+
+- kLFONormalOutput	
+- kLFONormalOutputInverted
+- kLFOQuadPhaseOutput
+- kLFOQuadPhaseOutputInverted
+- kUnipolarOutputFromMax
+- kUnipolarOutputFromMin
+
+*/
 class SynthLFO : public ISynthModulator//ISynthOscillator
 {
 public:
@@ -70,6 +102,10 @@ public:
 		modCounter = 0.0;			///< modulo counter [0.0, +1.0]
 		modCounterQP = 0.25;		///<Quad Phase modulo counter [0.0, +1.0]
 
+		// --- normal reset
+		delayTimer.resetTimer();
+		//rampTimer.resetTimer();
+
 		return true;
 	}
 
@@ -83,7 +119,12 @@ public:
 			modCounter = 0.0;			///< modulo counter [0.0, +1.0]
 			modCounterQP = 0.25;		///< Quad Phase modulo counter [0.0, +1.0]
 		}
-	
+
+		// --- reset
+		delayTimer.resetTimer();
+		// rampTimer.resetTimer();
+		ramplitudeValue = 0.0;
+
 		randomSHCounter = -1; // -1 = reset
 		return true; 
 	}
@@ -129,6 +170,15 @@ protected:
 	uint32_t pnRegister = 0;			///< 32 bit register for PN oscillator
 	int randomSHCounter = -1;			///< random sample/hold counter;  -1 is reset condition
 	double randomSHValue = 0.0;			///< current output, needed because we hold this output for some number of samples = (sampleRate / oscFrequency)
+
+	// --- in class stuff; this is for a fixed on-delay time
+	Timer delayTimer;
+
+	// --- in class stuff; this is the trivial way to handle the ramp time
+	//     need to get them to do this as a modulation, to understand glide
+	// Timer rampTimer;
+	double ramplitudePerSampleStep = 0.0;
+	double ramplitudeValue = 1.0;
 
 	/**
 	\struct checkAndWrapModulo

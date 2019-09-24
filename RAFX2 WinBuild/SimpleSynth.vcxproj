@@ -232,6 +232,7 @@
     <ClInclude Include="..\PluginKernel\pluginparameter.h" />
     <ClInclude Include="..\PluginKernel\pluginstructures.h" />
     <ClInclude Include="..\PluginObjects\analogsaw.h" />
+    <ClInclude Include="..\PluginObjects\analog_square_1.h" />
     <ClInclude Include="..\PluginObjects\dca_eg.h" />
     <ClInclude Include="..\PluginObjects\fxobjects.h" />
     <ClInclude Include="..\PluginObjects\filters.h" />
@@ -239,9 +240,11 @@
     <ClInclude Include="..\PluginObjects\synthdefs.h" />
     <ClInclude Include="..\PluginObjects\synthlfo.h" />
     <ClInclude Include="..\PluginObjects\synthoscillator.h" />
+    <ClInclude Include="..\PluginObjects\testbrick.h" />
     <ClInclude Include="..\PluginObjects\trace.h" />
     <ClInclude Include="..\PluginObjects\vafilters.h" />
     <ClInclude Include="..\PluginObjects\wavedata.h" />
+    <ClInclude Include="..\PluginObjects\wavetable.h" />
     <ClInclude Include="..\PluginObjects\wavetableoscillator.h" />
     <ClInclude Include="..\PluginObjects\window_eg.h" />
     <ClInclude Include="..\RAFX2 Source\RackAFXDLL.h" />
@@ -250,12 +253,18 @@
     <ClInclude Include="..\Resources\resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Eqn1.pdf" />
     <None Include="..\Resources\PluginGUI.uidesc">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="PluginGUIMain.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\docs\AddingDoxygenSupport.txt" />
+    <Text Include="..\docs\mainpage.txt" />
+    <Text Include="..\docs\oscillators.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
